@@ -11,12 +11,19 @@ const SearchPage = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    let q = e.target.value.trim();
+    setQuery(q);
+    if (q.length === 0) {
+      setLoading(false);
+      setError("");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
       if (query.trim() !== "") {
         const response = await axios.get(
-          `https://openlibrary.org/search.json?q=${query}&limit=10&page=1`
+          `https://openlibrary.org/search.json?q=${q}&limit=10&page=1`
         );
         setBooks(response.data.docs);
       } else {
@@ -31,17 +38,15 @@ const SearchPage = () => {
 
   return (
     <div className="container mt-4">
-      <form onSubmit={handleSearch}>
-        <input
-          className="form-control mb-4"
-          type="text"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-          }}
-          placeholder="Search for books..."
-        />
-      </form>
+      <input
+        className="form-control mb-4"
+        type="text"
+        value={query}
+        onChange={(e) => {
+          handleSearch(e);
+        }}
+        placeholder="Search for books..."
+      />
       {loading && (
         <div className="text-center">
           <ClipLoader color="#007bff" loading={loading} size={50} />
